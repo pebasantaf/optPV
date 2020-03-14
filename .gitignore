@@ -131,3 +131,6 @@ dmypy.json
 # database
 *.accdb
 *.laccdb
+
+#.idea
+.idea/

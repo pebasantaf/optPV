@@ -19,7 +19,7 @@ Structure:
     - Again, with several of the solar panels a class could be created that stores the data for the different fabricants
     - Once this is defined, we want to be able to find out if either only solar pannels or solar + battery is economically
     feasible.
-    - The reference month for both the installation and storage should be dediced, as it is not the same a solar system
+    - The reference month for both the installation and storage should be decided, as it is not the same a solar system
     based on July or based on January. Maybe an evaluation of cost, % of energy covered and savings can be done per month,
     in order to find the most suitable solution. Within that monthly study, the optimal solution considering only 
     solar and solar and batteries is computed. 
