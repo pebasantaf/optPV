@@ -1,5 +1,4 @@
 from pathlib import Path
-import pandas as pd
 from demand_data  import CreateDFwithDemand
 
 folder = 'optPV_data/Data/Consumo segundo/'

@@ -1,6 +1,6 @@
 import os
 from os.path import isfile, join
-
+import pandas as pd
 
 
 def getCSVfromdir(mypath):
@@ -29,6 +29,6 @@ def CreateDFwithDemand(datapath):
 
         else:
 
-            data = data.append(aktdata)
+            data = data.append(aktdata, ignore_index=True)
 
-        return data
+    return data
