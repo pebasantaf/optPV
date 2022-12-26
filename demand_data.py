@@ -1,28 +1,29 @@
-import os
-from os.path import isfile, join
+from utils import getCSVfromdir
 import pandas as pd
 
-
-def getCSVfromdir(mypath):
-
-    onlyfiles = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
-
-    return onlyfiles
 
 def CreateDFwithDemand(datapath):
 
     filenames = getCSVfromdir(datapath)
     data = []
     for f in filenames:
+        
+        fextension = f.split('.')[-1]
+        
+        if fextension == 'csv':
+            
+            aktdata  = pd.read_csv(datapath / f, sep=';', decimal=',')
+            
+        elif fextension == 'xlsx':
+            
+            aktdata  = pd.read_excel(datapath / f, header=12)
 
-        aktdata  = pd.read_excel(datapath / f, header=12)
+            # get index first empty row to reduce dataframe 
 
-        # get index first empty row to reduce dataframe 
+            emptyrow = aktdata[aktdata.columns[0]].index[aktdata.Fecha.isnull()==True].tolist()[0]
 
-        emptyrow = aktdata[aktdata.columns[0]].index[aktdata.Fecha.isnull()==True].tolist()[0]
-
-        #limit dataframe until empty row
-        aktdata = aktdata.loc[0:emptyrow-1,:]
+            #limit dataframe until empty row
+            aktdata = aktdata.loc[0:emptyrow-1,:]
 
         if filenames.index(f) == 0:
             data = aktdata
@@ -32,3 +33,9 @@ def CreateDFwithDemand(datapath):
             data = data.append(aktdata, ignore_index=True)
 
     return data
+
+
+def generateTimeZones(length):
+    
+    
+    print()
