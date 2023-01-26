@@ -51,13 +51,13 @@ class pvSystem():
         photovoltaic power plant.
         """
         # max. generation (kW)
-        self.P_g_max = 5000;
+        self.P_g_max = 8;
         
         # min. generation (kW)
         self.P_g_min = 0;
         
         # variable generation cost (EUR/kWh)
-        self.cost = 0.048;
+        self.cost = 0.045;
         
         # greenhouse gas emissions (gCO2/kWh)
         self.ghg_CO2 = 0.001;
@@ -74,7 +74,8 @@ class electricityMarket():
         P_ex_max = None,
         ghg_CO2_IM = None,
         ghg_CO2_EX = None,
-        price_em = None
+        price_em = None,
+        compensation_em = None
     ):
         
         """
@@ -102,8 +103,12 @@ class electricityMarket():
         self.ghg_CO2_EX = 0.001;
 
         self.price_em =  None
+        self.compensation_em = None
         
     def constantEMprice(self, value, length):
         
         self.price_em = [value]*length
         
+    def constantCompensation(self,value,length):
+        
+        self.compensation_em = [value]*length

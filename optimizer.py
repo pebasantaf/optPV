@@ -20,10 +20,10 @@ class setCS():
         # NOTE: Profiles have a time resolution of 15 minutes and include data of seven days.
         
         # time increment (h)
-        self.time_increment = 0.25; # (h)
+        self.time_increment = 1; # (h)
         
         # number of time steps
-        self.nr_timesteps = 24;
+        self.nr_timesteps = 24*31;
         
         # objective function
         # (1 - cost optimized, 2 - CO2 optimized)
@@ -119,8 +119,9 @@ def writeLPem(filedirectory, cs, em):
 
             for i in range(cs.nr_timesteps):
                 cost = em.price_em[i]
+                gain = em.compensation_em[i]
                 f.write("+ {:g} P_im_em~{} - {:g} P_ex_em~{}\n".format
-                    (cost*cs.time_increment, tstep[i], cost*cs.time_increment, tstep[i]))
+                    (cost*cs.time_increment, tstep[i], gain*cs.time_increment, tstep[i]))
             
         elif (cs.objective_function==2): # CO2 optimization
            
@@ -236,10 +237,18 @@ def writeLPpv(filedirectory:dict, cs, pv):
     # write profile given constraints into file for each time step
         tstep = np.array(range(1,cs.nr_timesteps+1))
         for i in range(cs.nr_timesteps):
-            f.write("P_g_pv~{} = {:g}\n".format(tstep[i],pv.power[i]));
+            f.write("P_g_pv~{} - {:g} P_peak_pv~{} = 0\n".format(tstep[i],pv.power[i],tstep[i]))
     
         # close temporary optimization file 
         f.close()
+    
+    with open(filedirectory['cons'],'a') as f:
+        tstep = np.array(range(1,cs.nr_timesteps+1))
+        for i in range(cs.nr_timesteps-1):
+            f.write("P_peak_pv~{} - P_peak_pv~{} = 0\n".format(tstep[i],tstep[i+1]))
+            
+        f.close()
+    
     """
     boundaries
     """ 
@@ -252,7 +261,7 @@ def writeLPpv(filedirectory:dict, cs, pv):
         lb = pv.P_g_min
         ub = pv.P_g_max
         for i in range(cs.nr_timesteps):
-            f.write("{:g} <= P_g_pv~{} <= {}\n".format(lb,tstep[i],ub))
+            f.write("{:g} <= P_peak_pv~{} <= {}\n".format(lb,tstep[i],ub))
         # close temporary optimization file 
         f.close()
 
@@ -378,7 +387,8 @@ def sortResults(cs, cpx_sol, cpx_var):
                'hh': {'P_d':[],
                 },
                
-               'pv': {'P_g':[]},
+               'pv': {'P_g':[],
+                      'P_peak':[]},
                 }
     
     for key1 in results:

@@ -19,16 +19,16 @@ if __name__ == '__main__':
     solarpath = currentpath.parent / solarfolder
     cs = setCS()
     
-    initdate = datetime(2022,5,2)
-    enddate = datetime(2022,5,30)
+    initdate = datetime(2022,5,1)
+    enddate = datetime(2022,5,31)
     
     demanddata = CreateDFwithDemand(demandpath)
     demanddata = selectDatabyDate(demanddata, initdate, enddate, datecolumn=1)
     
     zones = generateTimeZones(demanddata.shape[0])
     
-    initdate = datetime(2019,5,2)
-    enddate = datetime(2019,5,30)
+    initdate = datetime(2019,5,1)
+    enddate = datetime(2019,5,31)
     
     solardata = importSolarData(solarpath)
     solardata = selectDatabyDate(solardata, initdate, enddate, dateformat='%Y-%m-%d')
@@ -39,6 +39,7 @@ if __name__ == '__main__':
     em = electricityMarket()
     
     em.constantEMprice(0.14, cs.nr_timesteps)
+    em.constantCompensation(0, cs.nr_timesteps)
     
     pv.power = solardata.electricity.values
     hh.power = demanddata.Consumo_kWh.values
@@ -58,6 +59,7 @@ if __name__ == '__main__':
     cpx_var = opt.variables.get_names()
     
     results = sortResults(cs, cpx_sol, cpx_var)
+    
     
     pl.plotResults(cs, results, em)
     
